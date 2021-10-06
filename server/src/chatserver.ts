@@ -1,13 +1,8 @@
 import EventEmitter from "events";
 import { Socket } from "socket.io";
 import AuthenticationHandler from "./authentication";
+import Message from "./chatmessage";
 import User from "./user";
-
-interface IntroductionPacket {
-  username: string;
-  users: string[];
-  time: string;
-}
 
 interface LoginPacket {
   username: string;
@@ -15,39 +10,72 @@ interface LoginPacket {
 }
 
 export default class ChatServer extends EventEmitter {
-  users: User[];
+  users: Map<Socket, User>;
   auth: AuthenticationHandler;
 
   constructor() {
     super();
 
-    this.users = [];
+    this.users = new Map();
     this.auth = new AuthenticationHandler();
+
+    this.on("user-join", (user: User) =>
+      console.log(`welcome ${user.username}`)
+    );
+
+    this.on("user-leave", (user: User) =>
+      console.log(`goodbye ${user.username}`)
+    );
+
+    this.on("chat-message", (data: Message) => {
+      const { sender, content } = data;
+      console.log(`${sender}: ${content}`);
+      Array.from(this.users.keys()).forEach((socket) =>
+        socket.emit("chat-message", data)
+      );
+    });
   }
 
   init(socket: Socket) {
-    console.log("some mofo connected");
-
     socket.on("login-request", (data: LoginPacket) => {
-      console.log(this.users);
-
       const { username, password } = data;
       if (!this.auth.isCredentialsValid(username, password)) {
         socket.emit("incorrect-password");
         return;
       }
 
-      console.log(`user joined: ${username}`);
       const user: User = { username, socket };
-      this.users.push(user);
+      this.users.set(socket, user);
 
-      const introduction: IntroductionPacket = {
+      socket.emit("welcome", {
         username,
-        users: this.users.map((u) => u.username),
+        users: Object.values(this.users).map((u) => u.username),
         time: "",
-      };
-      socket.emit("welcome", introduction);
+      });
       this.emit("user-join", user);
+    });
+
+    socket.on("chat-message", (content: string) => {
+      if (!content || !content.length) return;
+
+      const user = this.users.get(socket);
+
+      if (user) {
+        const message: Message = {
+          content,
+          sender: user.username,
+        };
+        this.emit("chat-message", message);
+      }
+    });
+
+    socket.on("disconnect", () => {
+      const user = this.users.get(socket);
+
+      if (user) {
+        this.emit("user-leave", user);
+        this.users.delete(socket);
+      }
     });
   }
 }

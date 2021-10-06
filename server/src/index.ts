@@ -1,6 +1,6 @@
 import express from "express";
 import http from "http";
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import ChatServer from "./chatserver";
 
 const app = express();
@@ -13,7 +13,7 @@ const io = new Server(server, {
 });
 const chat = new ChatServer();
 
-io.on("connection", (socket: Socket) => chat.init(socket));
+io.on("connection", (socket) => chat.init(socket));
 
 server.listen(3001, () => {
   console.log(`Listening on port 3001`);

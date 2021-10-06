@@ -62,67 +62,51 @@ export default class LoginForm extends React.Component<LoginProps, LoginState> {
         style={{ minHeight: "100vh" }}
       >
         <Paper elevation={10} style={paperStyle}>
-          <Grid
-            container
-            spacing={0}
-            direction="column"
-            justifyContent="center"
-            style={{ minHeight: "35" }}
+          <h2>LAET Chat - Sign In</h2>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const { username, password } = this.state;
+              this.props.chathandler.requestLogin(username, password);
+            }}
           >
-            <h2>LAET Chat - Sign In</h2>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const { username, password } = this.state;
-                this.props.chathandler.requestLogin(username, password);
-              }}
-            >
-              <TextField
-                label="Username"
-                value={this.state.username}
-                onChange={(e) =>
-                  this.setState({
-                    username: e.target.value,
-                    password: this.state.password,
-                    error: "",
-                  })
-                }
-                fullWidth
-                required
-              ></TextField>
-              <TextField
-                label="Password"
-                type="password"
-                value={this.state.password}
-                onChange={(e) =>
-                  this.setState({
-                    username: this.state.username,
-                    password: e.target.value,
-                    error: "",
-                  })
-                }
-                fullWidth
-                required
-              ></TextField>
-
-              <FormControlLabel
-                control={<Checkbox name="checkedB" color="primary" />}
-                label="Remember me"
-              />
-
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-              >
-                Sign In
-              </Button>
-
-              {this.state.error ? <Error>{this.state.error}</Error> : <></>}
-            </form>
-          </Grid>
+            <TextField
+              label="Username"
+              value={this.state.username}
+              onChange={(e) =>
+                this.setState({
+                  username: e.target.value,
+                  password: this.state.password,
+                  error: "",
+                })
+              }
+              fullWidth
+              required
+            ></TextField>
+            <TextField
+              label="Password"
+              type="password"
+              value={this.state.password}
+              onChange={(e) =>
+                this.setState({
+                  username: this.state.username,
+                  password: e.target.value,
+                  error: "",
+                })
+              }
+              fullWidth
+              required
+            ></TextField>
+            <FormControlLabel
+              control={<Checkbox name="checkedB" color="primary" />}
+              label="Remember me"
+            />
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Sign In
+            </Button>{" "}
+            {this.state.error ? <Error>{this.state.error}</Error> : <></>}
+          </form>
         </Paper>
       </Grid>
     );

@@ -2,6 +2,7 @@ import ChatHandler from "./chathandler";
 import LoginForm from "./components/login";
 import { CircularProgress, Grid } from "@material-ui/core";
 import React from "react";
+import Chat from "./components/chat";
 
 const chathandler = new ChatHandler();
 
@@ -46,7 +47,6 @@ export default class App extends React.Component<{}, AppState> {
       return <LoginForm chathandler={chathandler} />;
     }
 
-    if (this.state.authenticated) return <h1>Connected!</h1>;
-    return <h1>dont know whats here</h1>;
+    return <Chat chathandler={chathandler} />;
   }
 }

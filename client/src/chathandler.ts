@@ -60,4 +60,8 @@ export default class ChatHandler extends EventEmitter {
   requestLogin(username: string, password: string) {
     this.socket.emit("login-request", { username, password });
   }
+
+  sendMessage(content: string) {
+    this.socket.emit("chat-message", content);
+  }
 }
