@@ -55,6 +55,8 @@ export default class ChatHandler extends EventEmitter {
     this.socket.on("chat-message", (data: MessagePacket) => {
       if (this.state) this.emit("chat-message", data);
     });
+
+    this.socket.on("announcement", content => this.emit("announcement", content))
   }
 
   requestLogin(username: string, password: string) {

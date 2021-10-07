@@ -16,7 +16,7 @@ const ChatMessage = (props: Message) => (
 
 interface ChatState {
   input: string;
-  messages: Message[];
+  messages: JSX.Element[];
 }
 
 interface ChatProps {
@@ -32,12 +32,20 @@ export default class Chat extends React.Component<ChatProps, ChatState> {
 
   componentDidMount() {
     this.props.chathandler.on("chat-message", this.appendMessage.bind(this));
+    this.props.chathandler.on("announcement", this.appendAnnouncement.bind(this));
   }
 
   private appendMessage(message: Message) {
     let { input, messages } = this.state;
-    messages.push(message);
+    const { sender, content } = message;
+    messages.push(<ChatMessage sender={sender} content={content} />);
     this.setState({ input, messages });
+  }
+
+  private appendAnnouncement(content: string) {
+    let { input, messages } = this.state;
+    messages.push(<Typography><b>{content}</b></Typography>)
+    this.setState({ input, messages })
   }
 
   private setInput(input: string) {
@@ -58,9 +66,7 @@ export default class Chat extends React.Component<ChatProps, ChatState> {
         alignItems="center"
         justifyContent="center"
       >
-        {this.state.messages.map((m, i) => (
-          <ChatMessage key={i} sender={m.sender} content={m.content} />
-        ))}
+        {this.state.messages.map((e, i) => <Grid item key={i}> {e} </Grid>)}
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -88,7 +94,7 @@ export default class Chat extends React.Component<ChatProps, ChatState> {
             </Button>
           </Grid>
         </form>
-      </Grid>
+      </Grid >
     );
   }
 }
