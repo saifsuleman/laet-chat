@@ -30,11 +30,15 @@ export default class ChatServer extends EventEmitter {
     this.on("chat-message", (data: Message) => {
       const { sender, content } = data;
       console.log(`${sender}: ${content}`);
-      this.broadcast("chat-message", data)
+      this.broadcast("chat-message", data);
     });
 
-    this.on("user-join", (user: User) => this.announce(`${user.username} has joined the chat!`))
-    this.on("user-leave", (user: User) => this.announce(`${user.username} has left the chat!`))
+    this.on("user-join", (user: User) =>
+      this.broadcast("user-join", user.username)
+    );
+    this.on("user-leave", (user: User) =>
+      this.broadcast("user-leave", user.username)
+    );
   }
 
   announce(content: string) {
@@ -44,7 +48,7 @@ export default class ChatServer extends EventEmitter {
   broadcast(key: string, data: any) {
     Array.from(this.users.keys()).forEach((socket: Socket) => {
       socket.emit(key, data);
-    })
+    });
   }
 
   init(socket: Socket) {

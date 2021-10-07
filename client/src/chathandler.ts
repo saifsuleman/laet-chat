@@ -40,7 +40,7 @@ export default class ChatHandler extends EventEmitter {
   constructor() {
     super();
 
-    this.socket = io("http://127.0.0.1:3001");
+    this.socket = io(`http://${window.location.host.split(":")[0]}:3001`);
 
     this.socket.on("connect", () => this.emit("reload"));
     this.socket.on("disconnect", () => this.emit("reload"));
@@ -56,7 +56,21 @@ export default class ChatHandler extends EventEmitter {
       if (this.state) this.emit("chat-message", data);
     });
 
-    this.socket.on("announcement", content => this.emit("announcement", content))
+    this.socket.on("user-join", (user: string) => {
+      this.emit("announcement", `${user} has joined the chat!`);
+
+      this.state?.users.push(user);
+      this.emit("reload");
+    });
+
+    this.socket.on("user-leave", (user: string) => {
+      this.emit("announcement", `${user} has left the chat!`);
+
+      if (!this.state) return;
+
+      this.state.users = this.state?.users.filter((u) => u !== user);
+      this.emit("reload");
+    });
   }
 
   requestLogin(username: string, password: string) {
