@@ -1,10 +1,10 @@
-import ChatHandler from "./chathandler";
+import ChatHandler, { ChatHandlerSIO, ChatHandlerGo } from "./chathandler";
 import LoginForm from "./components/login";
 import { CircularProgress, Grid } from "@material-ui/core";
 import React from "react";
 import Chat from "./components/chat";
 
-const chathandler = new ChatHandler();
+const chathandler: ChatHandler = new ChatHandlerGo();
 
 interface AppState {
   authenticated: boolean;
