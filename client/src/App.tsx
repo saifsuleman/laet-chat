@@ -4,7 +4,7 @@ import { CircularProgress, Grid } from "@material-ui/core";
 import React from "react";
 import Chat from "./components/chat";
 
-const chathandler: ChatHandler = new ChatHandlerGo();
+const chathandler: ChatHandler = new ChatHandlerSIO();
 
 interface AppState {
   authenticated: boolean;

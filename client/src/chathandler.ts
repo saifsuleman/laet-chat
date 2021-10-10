@@ -124,7 +124,7 @@ export class ChatHandlerSIO extends EventEmitter implements IChatHandler {
   constructor() {
     super();
 
-    this.socket = io(`http://${window.location.host.split(":")[0]}:3001`);
+    this.socket = io(`http://127.0.0.1:3001`);
 
     this.socket.on("connect", () => this.emit("reload"));
     this.socket.on("disconnect", () => this.emit("reload"));
