@@ -1,6 +1,7 @@
 import mongo from "mongodb"
-import { DATABASE_URL } from "./constants.js"
 import crypto from "crypto"
+
+const DATABASE_URL = `mongodb://127.0.0.1:27017/`
 
 let database
 
