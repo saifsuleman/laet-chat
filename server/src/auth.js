@@ -1,6 +1,7 @@
 import mongo from "mongodb"
-import { DATABASE_URL } from "./constants.js"
 import crypto from "crypto"
+
+const DATABASE_URL = `mongodb://127.0.0.1:27017/`
 
 let database
 
@@ -18,10 +19,16 @@ const hash = (password, salt) => {
 	return { hash: val, salt }
 }
 
+const has = async (username) => new Promise(r => {
+	r(database.collection(`logins`).find(entry => entry["_id"] == username).size() > 0)
+})
+
 const register = async (username, password) => new Promise(r => {
 	const { hash: hashed, salt } = hash(password, generateSalt(12))
 
 	const entry = { _id: username, hash: hashed, salt }
+
+	if(has(username)) return r(false)
 
 	database.collection(`logins`).insertOne(entry, err => {
 		if (err) throw err
