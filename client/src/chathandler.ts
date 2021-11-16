@@ -24,6 +24,7 @@ export default interface IChatHandler extends EventEmitter {
   get authenticated(): boolean;
 
   requestLogin(username: string, password: string): void;
+  requestSignup(username: string, password: string): void;
   sendMessage(content: string): void;
 }
 
@@ -86,6 +87,9 @@ export class ChatHandlerGo extends EventEmitter implements IChatHandler {
       this.emit("reload");
     });
   }
+  requestSignup(username: string, password: string): void {
+    throw new Error("Method not implemented.");
+  }
 
   send(type: string, data?: object) {
     const packet = { type, data };
@@ -124,7 +128,7 @@ export class ChatHandlerSIO extends EventEmitter implements IChatHandler {
   constructor() {
     super();
 
-    this.socket = io(`http://127.0.0.1:3001`);
+    this.socket = io(`http://${window.location.host.split(":")[0]}:3001`);
 
     this.socket.on("connect", () => this.emit("reload"));
     this.socket.on("disconnect", () => this.emit("reload"));
@@ -155,10 +159,19 @@ export class ChatHandlerSIO extends EventEmitter implements IChatHandler {
       this.state.users = this.state?.users.filter((u) => u !== user);
       this.emit("reload");
     });
+
+    this.socket.on(`signup-success`, (data) =>
+      this.emit(`signup-success`, data)
+    );
+    this.socket.on(`signup-fail`, (data) => this.emit(`signup-fail`, data));
   }
 
   requestLogin(username: string, password: string) {
     this.socket.emit("login-request", { username, password });
+  }
+
+  requestSignup(username: string, password: string) {
+    this.socket.emit(`signup-request`, { username, password });
   }
 
   sendMessage(content: string) {

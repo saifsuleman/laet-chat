@@ -3,15 +3,17 @@ import LoginForm from "./components/login";
 import { CircularProgress, Grid } from "@material-ui/core";
 import React from "react";
 import Chat from "./components/chat";
+import { Route, Switch } from "react-router-dom";
+import SignupForm from "./components/signup";
 
-const chathandler: ChatHandler = new ChatHandlerSIO();
+export const chathandler: ChatHandler = new ChatHandlerSIO();
 
 interface AppState {
   authenticated: boolean;
   connected: boolean;
 }
 
-export default class App extends React.Component<{}, AppState> {
+export class App extends React.Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
 
@@ -50,3 +52,14 @@ export default class App extends React.Component<{}, AppState> {
     return <Chat chathandler={chathandler} />;
   }
 }
+
+export default () => (
+  <Switch>
+    <Route exact path="/" component={App} />
+    <Route
+      exact
+      path="/signup"
+      component={() => <SignupForm chathandler={chathandler} />}
+    ></Route>
+  </Switch>
+);
